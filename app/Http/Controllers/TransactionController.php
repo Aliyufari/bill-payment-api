@@ -3,48 +3,36 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreTransactionRequest;
 use App\Http\Requests\UpdateTransactionRequest;
+use App\Http\Requests\AirtimeTransactionRequest;
 
 class TransactionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function airtime(AirtimeTransactionRequest $request)
     {
-        //
-    }
+        $data = $request->validated();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreTransactionRequest $request)
-    {
-        //
-    }
+        $wallet = Auth::user()->wallets;
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Transaction $transaction)
-    {
-        //
-    }
+        if ($wallet->balance < $data['amount']) {
+            return response()->json([
+                'error' => 'Insufficient balance'
+            ], 400);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateTransactionRequest $request, Transaction $transaction)
-    {
-        //
-    }
+        $wallet->balance -= $data['amount'];
+        $wallet->save();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Transaction $transaction)
-    {
-        //
+        Transaction::create([
+            'user_id' => Auth::id(),
+            'transaction_type' => 'airtime',
+            'amount' => $data['amount']
+        ]);
+
+        return response()->json([
+            'message' => 'Airtime purchased successfully'
+        ]);
     }
 }

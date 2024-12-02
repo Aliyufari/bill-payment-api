@@ -3,48 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Wallet;
+use App\Models\Transaction;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Requests\FundWalletRequest;
 use App\Http\Requests\StoreWalletRequest;
 use App\Http\Requests\UpdateWalletRequest;
 
 class WalletController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function balance()
     {
-        //
+        $wallet = Auth::user()->wallet;
+        return response()->json([
+            'balance' => $wallet->balance
+        ]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreWalletRequest $request)
+    public function fund(FundWalletRequest $request)
     {
-        //
-    }
+        $data = $request->validated();
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Wallet $wallet)
-    {
-        //
-    }
+        $wallet = Auth::user()->wallet;
+        $wallet->balance += $data['amount'];
+        $wallet->save();
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateWalletRequest $request, Wallet $wallet)
-    {
-        //
-    }
+        Transaction::create([
+            'user_id' => Auth::id(),
+            'transaction_type' => 'fund',
+            'amount' => $data['amount']
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Wallet $wallet)
-    {
-        //
+        return response()->json([
+            'message' => 'Wallet funded successfully'
+        ]);
     }
 }
