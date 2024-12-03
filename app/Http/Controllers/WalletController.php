@@ -6,8 +6,6 @@ use App\Models\Wallet;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\FundWalletRequest;
-use App\Http\Requests\StoreWalletRequest;
-use App\Http\Requests\UpdateWalletRequest;
 
 class WalletController extends Controller
 {

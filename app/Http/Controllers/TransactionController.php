@@ -4,14 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Requests\StoreTransactionRequest;
-use App\Http\Requests\UpdateTransactionRequest;
-use App\Http\Requests\AirtimeTransactionRequest;
+use App\Http\Requests\PurchaseAirtimeRequest;
 
 class TransactionController extends Controller
 {
-    public function airtime(AirtimeTransactionRequest $request)
+    public function index()
     {
+        $this->authorize('index');
+        return response()->json([
+            'transactions' => Transaction::paginate(10)
+        ]);
+    }
+
+    public function purchase_airtime(PurchaseAirtimeRequest $request)
+    {
+        $this->authorize('purchase_airtime');
+
         $data = $request->validated();
 
         $wallet = Auth::user()->wallet;
