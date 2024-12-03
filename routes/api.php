@@ -22,7 +22,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'wallet'], function () {
 });
 
 // Transactions routes
-Route::group(['middleware' => 'auth:api', 'prefix' => 'teansactions'], function () {
+Route::group(['middleware' => 'auth:api', 'prefix' => 'transactions'], function () {
     Route::post('/airtime', [TransactionController::class, 'airtime']);
 });
 

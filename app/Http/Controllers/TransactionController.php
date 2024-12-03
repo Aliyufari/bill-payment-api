@@ -14,7 +14,7 @@ class TransactionController extends Controller
     {
         $data = $request->validated();
 
-        $wallet = Auth::user()->wallets;
+        $wallet = Auth::user()->wallet;
 
         if ($wallet->balance < $data['amount']) {
             return response()->json([
