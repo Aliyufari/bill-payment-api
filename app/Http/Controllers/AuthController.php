@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\LoginUserRequest;
@@ -15,12 +17,22 @@ class AuthController extends Controller
     {
         $credentials = $request->validated();
 
+        DB::beginTransaction();
+
         try {
             $credentials['password'] = bcrypt($credentials['password']);
             $user = User::create($credentials);
-    
+            
+            // Create wallet for the user
+            Wallet::create([
+                'user_id' => $user->id,
+                'balance' => 0
+            ]);
+
+            DB::commit();
+
             $token = Auth::guard('api')->login($user);
-    
+
             return response()->json([
                 'status' => true,
                 'message' => 'User registered successfully',
@@ -31,6 +43,8 @@ class AuthController extends Controller
             ], 201);
 
         } catch (\Exception $e) {
+            DB::rollBack();
+
             return response()->json([
                 'status' => false,
                 'message' => 'Error registering user: ' . $e->getMessage()

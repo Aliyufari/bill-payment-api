@@ -50,12 +50,6 @@ class User extends Authenticatable implements JWTSubject
         ];
     }
 
-    protected $policies = [
-        Wallet::class => WalletPolicy::class,
-        Transaction::class => TransactionPolicy::class,
-    ];
-    
-
     public function wallet()
     {
         return $this->hasOne(

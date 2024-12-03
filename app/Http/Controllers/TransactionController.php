@@ -10,19 +10,30 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $this->authorize('index');
+        $transactions = Transaction::where('user_id', Auth::id())->paginate(10);
+
+        if ($transactions->isEmpty()) {
+            return response()->json([
+                'error' => 'Not Found'
+            ], 404);
+        }
+
         return response()->json([
-            'transactions' => Transaction::paginate(10)
+            'transactions' => $transactions
         ]);
     }
 
-    public function purchase_airtime(PurchaseAirtimeRequest $request)
+    public function purchaseAirtime(PurchaseAirtimeRequest $request)
     {
-        $this->authorize('purchase_airtime');
-
         $data = $request->validated();
 
         $wallet = Auth::user()->wallet;
+        
+        if (!$wallet) {
+            return response()->json([
+                'error' => 'Not Found'
+            ], 404);
+        }
 
         if ($wallet->balance < $data['amount']) {
             return response()->json([

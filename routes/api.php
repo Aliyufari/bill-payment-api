@@ -24,7 +24,7 @@ Route::group(['middleware' => 'auth:api', 'prefix' => 'wallet'], function () {
 // Transactions routes
 Route::group(['middleware' => 'auth:api', 'prefix' => 'transactions'], function () {
     Route::get('/', [TransactionController::class, 'index']);
-    Route::post('/airtime-purchase', [TransactionController::class, 'purchase_airtime']);
+    Route::post('/airtime-purchase', [TransactionController::class, 'purchaseAirtime']);
 });
 
 // Route::get('/user', function (Request $request) {

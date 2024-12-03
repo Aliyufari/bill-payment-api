@@ -12,6 +12,8 @@ class WalletController extends Controller
     public function balance()
     {
         $wallet = Auth::user()->wallet;
+        $this->authorize('balance', $wallet);
+
         return response()->json([
             'balance' => $wallet->balance
         ]);
@@ -22,6 +24,8 @@ class WalletController extends Controller
         $data = $request->validated();
 
         $wallet = Auth::user()->wallet;
+        $this->authorize('fund', $wallet);
+
         $wallet->balance += $data['amount'];
         $wallet->save();
 

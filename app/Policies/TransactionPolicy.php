@@ -8,13 +8,13 @@ use Illuminate\Auth\Access\Response;
 
 class TransactionPolicy
 {
-    public function index(User $user, Transaction $transaction): bool
+    public function index(User $user): bool
     {
-        return $user->id === $transaction->user_id;
+        return true;
     }
 
-    public function purchase_airtime(User $user, Transaction $transaction): bool
+    public function purchaseAirtime(User $user, Transaction $transaction): bool
     {
-        return $user->id === $transaction->user_id;
+        return true;
     }
 }

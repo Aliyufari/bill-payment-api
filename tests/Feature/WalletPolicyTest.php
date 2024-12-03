@@ -2,8 +2,9 @@
 
 use App\Models\User;
 use App\Models\Wallet;
-use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Auth\Access\AuthorizationException;
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -23,7 +24,7 @@ it('allows users to view their wallet balance', function () {
 it('denies user from viewing another user wallet balance', function () {
     $this->actingAs($this->otherUser);
 
-    expect(fn () => Auth::user()->can('balance', $this->wallet))
+    expect(fn () => Gate::authorize('balance', $this->wallet))
         ->toThrow(AuthorizationException::class);
 });
 
@@ -35,6 +36,6 @@ it('allows user to fund their wallet', function () {
 it('denies user from funding another user wallet', function () {
     $this->actingAs($this->otherUser);
 
-    expect(fn () => Auth::user()->can('fund', $this->wallet))
+    expect(fn () => Gate::authorize('fund', $this->wallet))
         ->toThrow(AuthorizationException::class);
 });
